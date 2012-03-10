@@ -1,0 +1,9 @@
+
+[Activity]
+name = ActivitiesStore
+activity_version = 1
+bundle_id = org.sugarlabs.ActivitiesStore
+exec = sugar-activity activity.ActivitiesStore -s
+icon = notes
+show_launcher = yes
+license = GPLv3+
