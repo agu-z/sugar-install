@@ -82,9 +82,11 @@ def download_activity(id, progress_function):
                        file_path,
                        reporthook=progress_changed)
 
-    install_activity(file_path)
+    install_activity(file_path, progress_function)
 
 
-def install_activity(xofile):
+def install_activity(xofile, progress_function):
+    progress_function(150)
     os.system('sugar-install-bundle %s' % xofile)
     os.remove(xofile)
+    progress_function(200)

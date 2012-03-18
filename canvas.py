@@ -173,23 +173,37 @@ class DownloadList(gtk.TreeView):
     def __init__(self):
         gtk.TreeView.__init__(self)
 
-        self._model = gtk.ListStore(str, int)
+        self._model = gtk.ListStore(str, str, int)
         self.set_model(self._model)
 
         renderer_text = gtk.CellRendererText()
         column_text = gtk.TreeViewColumn("Name", renderer_text, text=0)
         self.append_column(column_text)
 
+        renderer_text = gtk.CellRendererText()
+        column_text = gtk.TreeViewColumn("State", renderer_text, text=1)
+        self.append_column(column_text)
+
         renderer_progress = gtk.CellRendererProgress()
         column_progress = gtk.TreeViewColumn("Progress", renderer_progress,
-            value=1)
+            value=2)
         self.append_column(column_progress)
 
         self.show_all()
 
     def add_download(self, name):
-        iter = self._model.append([name, 0])
+        iter = self._model.append([name, "Starting download...", 0])
         return iter
 
     def set_download_progress(self, id, progress):
-        self._model[id][1] = int(progress)
+        if progress <= 100:
+            self._model[id][2] = int(progress)
+
+        if progress > 0:
+            self._model[id][1] = "Downloading..."
+
+        if progress >= 150:
+            self._model[id][1] = "Installing..."
+
+        if progress == 200:
+            self._model[id][1] = "Installed!"
