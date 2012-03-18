@@ -20,6 +20,7 @@
 
 import gtk
 import gobject
+import utils
 
 gtk.gdk.threads_init()
 
@@ -33,6 +34,9 @@ from sugar.graphics.icon import Icon
 from sugar.graphics import iconentry
 
 from canvas import Canvas
+
+# Update the list
+utils.update_list()
 
 
 class ActivitiesStore(activity.Activity):

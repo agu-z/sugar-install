@@ -26,8 +26,17 @@ import urllib
 
 from sugar.activity import activity
 
+LIST_DOWNLOAD = "https://sites.google.com/site/agustinzubiaga/archivos/store.lst"
 LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store.lst')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
+
+
+def update_list():
+    remote_file = urllib.urlopen(LIST_DOWNLOAD)
+    file = open(LIST_PATH, 'w')
+    file.write(remote_file.read())
+    file.close()
+    remote_file.close()
 
 
 def get_store_list():
@@ -78,3 +87,4 @@ def download_activity(id, progress_function):
 
 def install_activity(xofile):
     os.system('sugar-install-bundle %s' % xofile)
+    os.remove(xofile)
