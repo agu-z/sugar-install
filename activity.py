@@ -33,6 +33,8 @@ from sugar.graphics.radiotoolbutton import RadioToolButton
 from sugar.graphics.icon import Icon
 from sugar.graphics import iconentry
 
+from gettext import gettext as _
+
 from canvas import Canvas
 
 # Update the list
@@ -66,10 +68,12 @@ class ActivitiesStore(activity.Activity):
         store_list.set_active(True)
         store_list.props.icon_name = 'view-list'
         store_list.connect("clicked", canvas.switch_to_list)
+        store_list.set_tooltip(_("Show the search list"))
         toolbarbox.toolbar.insert(store_list, -1)
 
         downloads_list = RadioToolButton()
         downloads_list.connect("clicked", canvas.switch_to_downloads_list)
+        downloads_list.set_tooltip(_("Show the downloads list"))
         downloads_list.props.group = store_list
 
         self.downloads_icon = DownloadsIcon()

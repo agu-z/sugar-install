@@ -22,6 +22,8 @@ import gtk
 import threading
 import utils
 
+from gettext import gettext as _
+
 BTN_COLOR = gtk.gdk.color_parse("blue")
 
 
@@ -112,7 +114,7 @@ class ActivityWidget(gtk.HBox):
 
         self.name_label = self._label()
         self.icon = gtk.Image()
-        self.install_button = gtk.Button("INSTALL")
+        self.install_button = gtk.Button(_("INSTALL"))
         self.install_button.connect("clicked", self._btn_clicked)
         self.install_button.modify_bg(gtk.STATE_NORMAL, BTN_COLOR)
         self.install_button.modify_bg(gtk.STATE_PRELIGHT, BTN_COLOR)
@@ -177,22 +179,22 @@ class DownloadList(gtk.TreeView):
         self.set_model(self._model)
 
         renderer_text = gtk.CellRendererText()
-        column_text = gtk.TreeViewColumn("Name", renderer_text, text=0)
+        column_text = gtk.TreeViewColumn(_("Name"), renderer_text, text=0)
         self.append_column(column_text)
 
         renderer_text = gtk.CellRendererText()
-        column_text = gtk.TreeViewColumn("State", renderer_text, text=1)
+        column_text = gtk.TreeViewColumn(_("State"), renderer_text, text=1)
         self.append_column(column_text)
 
         renderer_progress = gtk.CellRendererProgress()
-        column_progress = gtk.TreeViewColumn("Progress", renderer_progress,
+        column_progress = gtk.TreeViewColumn(_("Progress"), renderer_progress,
             value=2)
         self.append_column(column_progress)
 
         self.show_all()
 
     def add_download(self, name):
-        iter = self._model.append([name, "Starting download...", 0])
+        iter = self._model.append([name, _("Starting download..."), 0])
         return iter
 
     def set_download_progress(self, id, progress):
@@ -200,10 +202,10 @@ class DownloadList(gtk.TreeView):
             self._model[id][2] = int(progress)
 
         if progress > 0:
-            self._model[id][1] = "Downloading..."
+            self._model[id][1] = _("Downloading...")
 
         if progress >= 150:
-            self._model[id][1] = "Installing..."
+            self._model[id][1] = _("Installing...")
 
         if progress == 200:
-            self._model[id][1] = "Installed!"
+            self._model[id][1] = _("Installed!")
