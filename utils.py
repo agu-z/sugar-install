@@ -25,6 +25,7 @@ import json
 import urllib
 
 from sugar.activity import activity
+from sugar.bundle.activitybundle import ActivityBundle
 
 LIST_DOWNLOAD = "https://sites.google.com/site/agustinzubiaga/archivos/store.lst"
 LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store.lst')
@@ -32,7 +33,7 @@ TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
 
 
 def update_list():
-    """Download the last list version"""
+    """Download the latest list version"""
     remote_file = urllib.urlopen(LIST_DOWNLOAD)
     file = open(LIST_PATH, 'w')
     file.write(remote_file.read())
@@ -90,7 +91,15 @@ def download_activity(id, progress_function):
 
 def install_activity(xofile, progress_function):
     """Install an downloaded activity"""
+    # Show "Installing..." message
     progress_function(150)
-    os.system('sugar-install-bundle %s' % xofile)
+
+    # Install the .xo
+    bundle = ActivityBundle(xofile)
+    bundle.install()
+
+    # Remove the .xo
     os.remove(xofile)
+
+    # Show "Installed..." message
     progress_function(200)
