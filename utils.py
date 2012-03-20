@@ -32,6 +32,7 @@ TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
 
 
 def update_list():
+    """Download the last list version"""
     remote_file = urllib.urlopen(LIST_DOWNLOAD)
     file = open(LIST_PATH, 'w')
     file.write(remote_file.read())
@@ -53,6 +54,7 @@ def get_store_list():
 
 
 def get_icon(activity_id):
+    """Get the icon of an specified activity"""
     store_list = get_store_list()
     activity_obj = store_list[activity_id]
 
@@ -66,6 +68,7 @@ def get_icon(activity_id):
 
 
 def download_activity(id, progress_function):
+    """Download (and install) an activity"""
     store_list = get_store_list()
     activity_obj = store_list[id]
 
@@ -86,6 +89,7 @@ def download_activity(id, progress_function):
 
 
 def install_activity(xofile, progress_function):
+    """Install an downloaded activity"""
     progress_function(150)
     os.system('sugar-install-bundle %s' % xofile)
     os.remove(xofile)
