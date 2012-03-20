@@ -23,13 +23,24 @@ import gtk
 import time
 import json
 import urllib
+import logging
 
 from sugar.activity import activity
 from sugar.bundle.activitybundle import ActivityBundle
 
+# Paths
 LIST_DOWNLOAD = "https://sites.google.com/site/agustinzubiaga/archivos/store.lst"
 LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store.lst')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
+
+# Logging
+_logger = logging.getLogger('activitiesstore-activity')
+_logger.setLevel(logging.DEBUG)
+logging.basicConfig()
+
+
+def get_logger():
+    return _logger
 
 
 def update_list():
@@ -82,10 +93,12 @@ def download_activity(id, progress_function):
     xo = '%s.xo' % activity_obj['Name'].replace('=', '')
     file_path = os.path.join(activity.get_activity_root(), "data", "%s" % (xo))
 
+    _logger.info("Downloading activity (%s)")
     urllib.urlretrieve(activity_obj['Download'],
                        file_path,
                        reporthook=progress_changed)
 
+    _logger.info("Installing activity (%s)")
     install_activity(file_path, progress_function)
 
 
@@ -103,3 +116,5 @@ def install_activity(xofile, progress_function):
 
     # Show "Installed..." message
     progress_function(200)
+
+    _logger.info("Activity installed! (%s)")

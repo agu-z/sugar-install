@@ -26,6 +26,9 @@ from gettext import gettext as _
 
 BTN_COLOR = gtk.gdk.color_parse("blue")
 
+# Logging
+_logger = utils.get_logger()
+
 
 class Canvas(gtk.Notebook):
 
@@ -158,6 +161,7 @@ class ActivityWidget(gtk.HBox):
         self.icon.set_from_pixbuf(pixbuf_icon)
 
     def _btn_clicked(self, widget):
+        _logger.info("Install button clicked (%s)")
         self._downloads_icon.animate()
 
         threading.Thread(target=utils.download_activity, args=(self._id,
