@@ -92,6 +92,8 @@ def download_activity(id, progress_function):
     activity_obj = store_list[id]
 
     name = activity_obj[1]
+    name = name.lower()
+    name = name.replace(' ', '_')
     n = activity_obj[0]
     web = 'http://activities.sugarlabs.org/es-ES/sugar/downloads/latest/'
     web = web + n + '/addon-' + n + '-latest.xo'
@@ -103,8 +105,8 @@ def download_activity(id, progress_function):
 
         progress_function(progress)
 
-    xo = '%s.xo' % name + '-' + version
-    file_path = os.path.join(activity.get_activity_root(), "data", "%s" % (xo))
+    xo = name + '-' + version + '.xo'
+    file_path = os.path.join(activity.get_activity_root(), "data", xo)
 
     _logger.info("Downloading activity (%s)")
     urllib.urlretrieve(web,
