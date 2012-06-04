@@ -96,22 +96,24 @@ class List(gtk.Table):
         self._rows = 0
         for child in self.get_children():
             self.remove(child)
+            child = None
 
     def search(self, entry):
-        self._clear()
-        self.words = entry.get_text()
+
+        try:
+            self.thread.cancel()
+        except:
+            pass
         
-        if self.thread:
-            try:
-                self.thread.cancel()
-            except:
-                pass
+
+        self.words = entry.get_text().lower()
+        self._clear()
 
         self.thread = threading.Timer(0, self._search)
         self.thread.start()
 
     def _search(self):
-        w = self.words.lower()
+        w = self.words
         id = -1
         for activity in self._list:
             id += 1
@@ -158,12 +160,12 @@ class ActivityWidget(gtk.HBox):
         self.down_label = self._label()
         self.home_label = self._label()
     
-        self._right_box.pack_start(self.desc_label, True, True, 0)
-        self._right_box.pack_start(self.vers_label, True, True, 0)
-        self._right_box.pack_start(self.suga_label, True, True, 0)
-        self._right_box.pack_start(self.upda_label, True, True, 0)
-        self._right_box.pack_start(self.down_label, True, True, 0)
-        self._right_box.pack_start(self.home_label, True, True, 0)
+        self._right_box.pack_start(self.desc_label, False, True, 0)
+        self._right_box.pack_start(self.vers_label, False, True, 0)
+        self._right_box.pack_start(self.suga_label, False, True, 0)
+        self._right_box.pack_start(self.upda_label, False, True, 0)
+        self._right_box.pack_start(self.down_label, False, True, 0)
+        self._right_box.pack_start(self.home_label, False, True, 0)
 
         self.pack_start(self._left_box, False, True, 0)
         self.pack_start(gtk.VSeparator(), False, True, 20)
