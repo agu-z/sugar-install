@@ -85,10 +85,10 @@ def get_icon(activity_id):
     return pixbuf
 
 
-def download_activity(id, progress_function):
+def download_activity(_id, progress_function):
     """Download (and install) an activity"""
     store_list = get_store_list()
-    activity_obj = store_list[id]
+    activity_obj = store_list[_id]
 
     name = activity_obj[1]
     name = name.lower()

@@ -70,12 +70,11 @@ class Canvas(gtk.Notebook):
         self.set_page(1)
 
 
-class List(gtk.Table):
+class List(gtk.VBox):
 
     def __init__(self, parent):
-        gtk.Table.__init__(self, rows=10, homogeneous=True)
+        gtk.VBox.__init__(self)
 
-        self._rows = 0
         self._list = utils.get_store_list()
         self.download_list = DownloadList()
 
@@ -87,13 +86,14 @@ class List(gtk.Table):
         self.show_all()
 
     def _add_activity(self, widget):
-        self.attach(widget, 0, 1, self._rows, self._rows + 1)
-        self.attach(gtk.HSeparator(), 0, 1, self._rows + 1, self._rows + 2)
-        self.show_all()
-        self._rows += 2
+        self.pack_start(widget, False, False, 7)
+        separator = gtk.HSeparator()
+        self.pack_start(separator, False, False, 2)
+
+        widget.show()
+        separator.show()
 
     def _clear(self):
-        self._rows = 0
         for child in self.get_children():
             self.remove(child)
             child = None
@@ -141,14 +141,14 @@ class ActivityWidget(gtk.HBox):
         self.install_button.modify_bg(gtk.STATE_ACTIVE, BTN_COLOR)
         self.install_button.set_size_request(gtk.gdk.screen_width() / 10, -1)
 
-        self._activity_props = parent._list[id]
+        self._activity_props = parent._list[_id]
 
         self._left_box = gtk.VBox()
         self._right_box = gtk.VBox()
         self._icon_and_label = gtk.HBox()
 
         self._icon_and_label.pack_start(self.icon, False, True, 0)
-        self._icon_and_label.pack_end(self.name_label, True, True, 0)
+        self._icon_and_label.pack_end(self.name_label, True, True, 6)
         self._left_box.pack_start(self._icon_and_label, False, True, 0)
         self._left_box.pack_end(self.install_button, False, True, 0)
 
@@ -166,13 +166,17 @@ class ActivityWidget(gtk.HBox):
         self._right_box.pack_start(self.down_label, False, True, 0)
         self._right_box.pack_start(self.home_label, False, True, 0)
 
-        self.pack_start(self._left_box, False, True, 0)
-        self.pack_start(gtk.VSeparator(), False, True, 20)
-        self.pack_start(self._right_box, False, True, 0)
+        self.pack_start(self._left_box, False, True, 10)
+        self.pack_end(self._right_box, False, True, 50)
+
+        self.connect("expose-event", self._expose_event_cb)
 
         self._setup()
 
         self.show_all()
+
+    def _expose_event_cb(self, widget, event):
+        self.install_button.set_size_request(gtk.gdk.screen_width() / 10, -1)
 
     def _label(self):
         label = gtk.Label()
@@ -183,15 +187,17 @@ class ActivityWidget(gtk.HBox):
         return label
 
     def _setup(self):
-        self.name_label.set_markup(self._activity_props[1])
+        self.name_label.set_markup("<b>%s</b>" % self._activity_props[1])
 
         self.desc_label.set_markup(self._activity_props[2])
-        self.vers_label.set_markup('Version: ' + self._activity_props[3])
-        self.suga_label.set_markup('Works with: ' +\
+        self.vers_label.set_markup('<b>Version:</b> ' + self._activity_props[3])
+        self.suga_label.set_markup('<b>Works with:</b> ' +\
                      self._activity_props[4] + ' - ' + self._activity_props[5])
-        self.upda_label.set_markup('Updated: ' + self._activity_props[6])
-        self.down_label.set_markup('Downloads: ' + self._activity_props[7])
-        self.home_label.set_markup('Homepage: ' + self._activity_props[8])
+        self.upda_label.set_markup('<b>Updated:</b> ' + self._activity_props[6])
+        self.down_label.set_markup('<b>Downloads:</b> ' +\
+                                                        self._activity_props[7])
+        self.home_label.set_markup('<b>Homepage:</b> ' +\
+                                                        self._activity_props[8])
 
         try:
             pixbuf_icon = utils.get_icon(self._id)
