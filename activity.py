@@ -38,7 +38,7 @@ from gettext import gettext as _
 from canvas import Canvas
 
 # Update the list
-#utils.update_list()
+utils.update_list()
 
 
 class ActivitiesStore(activity.Activity):

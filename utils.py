@@ -29,8 +29,8 @@ from sugar.activity import activity
 from sugar.bundle.activitybundle import ActivityBundle
 
 # Paths
-LIST_DOWNLOAD = "https://sites.google.com/site/agustinzubiaga/archivos/store.lst"
-LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store2.lst')
+LIST_DOWNLOAD = "http://www.fing.edu.uy/~aaguiar/files/store.lst"
+LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store.lst')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
 
 # Logging
@@ -43,7 +43,7 @@ def get_logger():
     return _logger
 
 
-def update_list2():
+def update_list():
     """Download the latest list version"""
     remote_file = urllib.urlopen(LIST_DOWNLOAD)
     file = open(LIST_PATH, 'w')
