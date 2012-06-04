@@ -20,8 +20,6 @@
 
 import os
 import gtk
-import time
-import json
 import urllib
 import logging
 
@@ -46,9 +44,9 @@ def get_logger():
 def update_list():
     """Download the latest list version"""
     remote_file = urllib.urlopen(LIST_DOWNLOAD)
-    file = open(LIST_PATH, 'w')
-    file.write(remote_file.read())
-    file.close()
+    _file = open(LIST_PATH, 'w')
+    _file.write(remote_file.read())
+    _file.close()
     remote_file.close()
 
 
@@ -71,14 +69,15 @@ def get_store_list():
 
 
 def get_icon(activity_id):
-    """Get the icon of an specified activity"""
+    """Returns the icon of an specified activity"""
     store_list = get_store_list()
     activity_obj = store_list[activity_id]
     number = activity_obj[0]
-    
+
     file_image = os.path.join(TMP_DIR, "icon%s" % number)
     if not os.path.exists(file_image):
-        url = 'http://activities.sugarlabs.org/en-US/sugar/images/addon_icon/' + number
+        url =\
+      'http://activities.sugarlabs.org/en-US/sugar/images/addon_icon/' + number
         f, headers = urllib.urlretrieve(url, file_image)
 
     pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(file_image, 45, 45)

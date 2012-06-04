@@ -104,7 +104,6 @@ class List(gtk.Table):
             self.thread.cancel()
         except:
             pass
-        
 
         self.words = entry.get_text().lower()
         self._clear()
@@ -114,22 +113,22 @@ class List(gtk.Table):
 
     def _search(self):
         w = self.words
-        id = -1
+        _id = -1
         for activity in self._list:
-            id += 1
+            _id += 1
             name = activity[1].lower()
             description = activity[2].lower()
             if (w in name) or (w in description):
-                activity_widget = ActivityWidget(id, self)
+                activity_widget = ActivityWidget(_id, self)
                 self._add_activity(activity_widget)
 
 
 class ActivityWidget(gtk.HBox):
 
-    def __init__(self, id, parent):
+    def __init__(self, _id, parent):
         gtk.HBox.__init__(self, False, 0)
 
-        self._id = id
+        self._id = _id
         self._download_list = parent.download_list
         self._downloads_icon = parent._parent.downloads_icon
 
@@ -159,7 +158,7 @@ class ActivityWidget(gtk.HBox):
         self.upda_label = self._label()
         self.down_label = self._label()
         self.home_label = self._label()
-    
+
         self._right_box.pack_start(self.desc_label, False, True, 0)
         self._right_box.pack_start(self.vers_label, False, True, 0)
         self._right_box.pack_start(self.suga_label, False, True, 0)
@@ -170,7 +169,6 @@ class ActivityWidget(gtk.HBox):
         self.pack_start(self._left_box, False, True, 0)
         self.pack_start(gtk.VSeparator(), False, True, 20)
         self.pack_start(self._right_box, False, True, 0)
-
 
         self._setup()
 
@@ -189,7 +187,8 @@ class ActivityWidget(gtk.HBox):
 
         self.desc_label.set_markup(self._activity_props[2])
         self.vers_label.set_markup('Version: ' + self._activity_props[3])
-        self.suga_label.set_markup('Works with: ' + self._activity_props[4] + ' - ' + self._activity_props[5])
+        self.suga_label.set_markup('Works with: ' +\
+                     self._activity_props[4] + ' - ' + self._activity_props[5])
         self.upda_label.set_markup('Updated: ' + self._activity_props[6])
         self.down_label.set_markup('Downloads: ' + self._activity_props[7])
         self.home_label.set_markup('Homepage: ' + self._activity_props[8])
@@ -207,7 +206,8 @@ class ActivityWidget(gtk.HBox):
         threading.Thread(target=utils.download_activity, args=(self._id,
                                 self._progress_changed)).start()
 
-        self._download_id = self._download_list.add_download(self._activity_props[1])
+        self._download_id = self._download_list.add_download(
+                                                        self._activity_props[1])
 
     def _progress_changed(self, progress):
         self._download_list.set_download_progress(self._download_id, progress)
@@ -237,18 +237,18 @@ class DownloadList(gtk.TreeView):
         self.show_all()
 
     def add_download(self, name):
-        iter = self._model.append([name, _("Starting download..."), 0])
-        return iter
+        _iter = self._model.append([name, _("Starting download..."), 0])
+        return _iter
 
-    def set_download_progress(self, id, progress):
+    def set_download_progress(self, _id, progress):
         if progress <= 100:
-            self._model[id][2] = int(progress)
+            self._model[_id][2] = int(progress)
 
         if progress > 0:
-            self._model[id][1] = _("Downloading...")
+            self._model[_id][1] = _("Downloading...")
 
         if progress >= 150:
-            self._model[id][1] = _("Installing...")
+            self._model[_id][1] = _("Installing...")
 
         if progress == 200:
-            self._model[id][1] = _("Installed!")
+            self._model[_id][1] = _("Installed!")
