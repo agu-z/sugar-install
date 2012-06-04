@@ -81,6 +81,9 @@ class List(gtk.Table):
 
         self._parent = parent
 
+        self.thread = None
+        self.words = ''
+
         self.show_all()
 
     def _add_activity(self, widget):
@@ -96,13 +99,25 @@ class List(gtk.Table):
 
     def search(self, entry):
         self._clear()
-        words = entry.get_text()
+        self.words = entry.get_text()
+        
+        if self.thread:
+            try:
+                self.thread.cancel()
+            except:
+                pass
+
+        self.thread = threading.Timer(0, self._search)
+        self.thread.start()
+
+    def _search(self):
+        w = self.words.lower()
         id = -1
         for activity in self._list:
             id += 1
-            name = activity[1]
-            description = activity[2]
-            if (words in name) or (words.capitalize() in name) or (words in description):
+            name = activity[1].lower()
+            description = activity[2].lower()
+            if (w in name) or (w in description):
                 activity_widget = ActivityWidget(id, self)
                 self._add_activity(activity_widget)
 
@@ -177,8 +192,11 @@ class ActivityWidget(gtk.HBox):
         self.down_label.set_markup('Downloads: ' + self._activity_props[7])
         self.home_label.set_markup('Homepage: ' + self._activity_props[8])
 
-        pixbuf_icon = utils.get_icon(self._id)
-        self.icon.set_from_pixbuf(pixbuf_icon)
+        try:
+            pixbuf_icon = utils.get_icon(self._id)
+            self.icon.set_from_pixbuf(pixbuf_icon)
+        except:
+            pass
 
     def _btn_clicked(self, widget):
         _logger.info("Install button clicked (%s)")
