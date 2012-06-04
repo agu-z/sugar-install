@@ -100,8 +100,9 @@ class List(gtk.Table):
         id = -1
         for activity in self._list:
             id += 1
-            if words in activity["Name"] or \
-               words.capitalize() in activity["Name"]:
+            name = activity[1]
+            description = activity[2]
+            if (words in name) or (words.capitalize() in name) or (words in description):
                 activity_widget = ActivityWidget(id, self)
                 self._add_activity(activity_widget)
 
@@ -122,23 +123,37 @@ class ActivityWidget(gtk.HBox):
         self.install_button.modify_bg(gtk.STATE_NORMAL, BTN_COLOR)
         self.install_button.modify_bg(gtk.STATE_PRELIGHT, BTN_COLOR)
         self.install_button.modify_bg(gtk.STATE_ACTIVE, BTN_COLOR)
-        self.install_button.set_size_request(gtk.gdk.screen_width() / 10,
-                                             -1)
-
-        self.desc_label = self._label()
+        self.install_button.set_size_request(gtk.gdk.screen_width() / 10, -1)
 
         self._activity_props = parent._list[id]
 
         self._left_box = gtk.VBox()
+        self._right_box = gtk.VBox()
         self._icon_and_label = gtk.HBox()
 
         self._icon_and_label.pack_start(self.icon, False, True, 0)
         self._icon_and_label.pack_end(self.name_label, True, True, 0)
         self._left_box.pack_start(self._icon_and_label, False, True, 0)
         self._left_box.pack_end(self.install_button, False, True, 0)
+
+        self.desc_label = self._label()
+        self.vers_label = self._label()
+        self.suga_label = self._label()
+        self.upda_label = self._label()
+        self.down_label = self._label()
+        self.home_label = self._label()
+    
+        self._right_box.pack_start(self.desc_label, True, True, 0)
+        self._right_box.pack_start(self.vers_label, True, True, 0)
+        self._right_box.pack_start(self.suga_label, True, True, 0)
+        self._right_box.pack_start(self.upda_label, True, True, 0)
+        self._right_box.pack_start(self.down_label, True, True, 0)
+        self._right_box.pack_start(self.home_label, True, True, 0)
+
         self.pack_start(self._left_box, False, True, 0)
         self.pack_start(gtk.VSeparator(), False, True, 20)
-        self.pack_start(self.desc_label, True, True, 0)
+        self.pack_start(self._right_box, False, True, 0)
+
 
         self._setup()
 
@@ -146,16 +161,21 @@ class ActivityWidget(gtk.HBox):
 
     def _label(self):
         label = gtk.Label()
+        label.set_justify(gtk.JUSTIFY_LEFT)
         label.set_line_wrap(True)
         label.set_use_markup(True)
 
         return label
 
     def _setup(self):
-        self.name_label.set_markup('<b>%s</b>' % self._activity_props["Name"])
+        self.name_label.set_markup(self._activity_props[1])
 
-        self.desc_label.set_markup('<i>%s</i>' %
-                                          self._activity_props["Description"])
+        self.desc_label.set_markup(self._activity_props[2])
+        self.vers_label.set_markup('Version: ' + self._activity_props[3])
+        self.suga_label.set_markup('Works with: ' + self._activity_props[4] + ' - ' + self._activity_props[5])
+        self.upda_label.set_markup('Updated: ' + self._activity_props[6])
+        self.down_label.set_markup('Downloads: ' + self._activity_props[7])
+        self.home_label.set_markup('Homepage: ' + self._activity_props[8])
 
         pixbuf_icon = utils.get_icon(self._id)
         self.icon.set_from_pixbuf(pixbuf_icon)
@@ -167,8 +187,7 @@ class ActivityWidget(gtk.HBox):
         threading.Thread(target=utils.download_activity, args=(self._id,
                                 self._progress_changed)).start()
 
-        self._download_id = \
-                self._download_list.add_download(self._activity_props["Name"])
+        self._download_id = self._download_list.add_download(self._activity_props[1])
 
     def _progress_changed(self, progress):
         self._download_list.set_download_progress(self._download_id, progress)

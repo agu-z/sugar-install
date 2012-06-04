@@ -30,7 +30,7 @@ from sugar.bundle.activitybundle import ActivityBundle
 
 # Paths
 LIST_DOWNLOAD = "https://sites.google.com/site/agustinzubiaga/archivos/store.lst"
-LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store.lst')
+LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store2.lst')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
 
 # Logging
@@ -43,7 +43,7 @@ def get_logger():
     return _logger
 
 
-def update_list():
+def update_list2():
     """Download the latest list version"""
     remote_file = urllib.urlopen(LIST_DOWNLOAD)
     file = open(LIST_PATH, 'w')
@@ -54,14 +54,19 @@ def update_list():
 
 def get_store_list():
     """Returns the store list"""
-    file = open(LIST_PATH, 'r')
+    f = open(LIST_PATH, 'r')
 
-    try:
-        store_list = json.load(file)
-
-    finally:
-        file.close()
-
+    store_list = []
+    e = True
+    while e:
+        line = f.readline()
+        if not(line):
+            e = False
+        else:
+            line = line.replace('\n', '')
+            l = line.split('|')
+            store_list.append(l)
+    print store_list
     return store_list
 
 
@@ -70,7 +75,10 @@ def get_icon(activity_id):
     store_list = get_store_list()
     activity_obj = store_list[activity_id]
 
-    url = activity_obj["Icon"]
+    link = 'http://activities.sugarlabs.org/en-US/sugar/images/addon_icon/'
+    url = link + activity_obj[0]
+
+    #url = activity_obj["Icon"]
     file = "%s/icon%s" % (TMP_DIR, time.time())
 
     fileimage, headers = urllib.urlretrieve(url, file)
@@ -84,17 +92,23 @@ def download_activity(id, progress_function):
     store_list = get_store_list()
     activity_obj = store_list[id]
 
+    name = activity_obj[1]
+    n = activity_obj[0]
+    web = 'http://activities.sugarlabs.org/es-ES/sugar/downloads/latest/'
+    web = web + n + '/addon-' + n + '-latest.xo'
+    version = activity_obj[3]
+
     def progress_changed(block, block_size, total_size):
         downloaded = block * block_size
         progress = downloaded * 100 / total_size
 
         progress_function(progress)
 
-    xo = '%s.xo' % activity_obj['Name'].replace('=', '')
+    xo = '%s.xo' % name + '-' + version
     file_path = os.path.join(activity.get_activity_root(), "data", "%s" % (xo))
 
     _logger.info("Downloading activity (%s)")
-    urllib.urlretrieve(activity_obj['Download'],
+    urllib.urlretrieve(web,
                        file_path,
                        reporthook=progress_changed)
 
