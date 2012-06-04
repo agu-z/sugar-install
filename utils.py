@@ -66,7 +66,7 @@ def get_store_list():
             line = line.replace('\n', '')
             l = line.split('|')
             store_list.append(l)
-    print store_list
+
     return store_list
 
 
@@ -74,15 +74,14 @@ def get_icon(activity_id):
     """Get the icon of an specified activity"""
     store_list = get_store_list()
     activity_obj = store_list[activity_id]
+    number = activity_obj[0]
+    
+    file_image = os.path.join(TMP_DIR, "icon%s" % number)
+    if not os.path.exists(file_image):
+        url = 'http://activities.sugarlabs.org/en-US/sugar/images/addon_icon/' + number
+        f, headers = urllib.urlretrieve(url, file_image)
 
-    link = 'http://activities.sugarlabs.org/en-US/sugar/images/addon_icon/'
-    url = link + activity_obj[0]
-
-    #url = activity_obj["Icon"]
-    file = "%s/icon%s" % (TMP_DIR, time.time())
-
-    fileimage, headers = urllib.urlretrieve(url, file)
-    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(fileimage, 45, 45)
+    pixbuf = gtk.gdk.pixbuf_new_from_file_at_size(file_image, 45, 45)
 
     return pixbuf
 
