@@ -88,9 +88,12 @@ class List(gtk.VBox):
         self.show_all()
 
     def setup(self, search_entry):
+        label_box = gtk.VBox()
         label = gtk.Label(_("Loading..."))
         label.modify_font(pango.FontDescription("25"))
-        self.pack_start(label, True, True, 0)
+        label_box.pack_start(label, True, True, 0)
+
+        self.pack_start(label_box, True, True, 0)
         threading.Thread(target=utils.update_list).start()
 
         self._list = utils.get_store_list()
@@ -100,6 +103,9 @@ class List(gtk.VBox):
             self.clear()
         else:
             label.set_text(_("Failed to download the list"))
+            try_again = gtk.Button(_("Try Again"))
+            try_again.connect("clicked", lambda w: self.setup(search_entry))
+            label_box.pack_start(try_again, False, True, 2)
 
         _logger.debug(str(self._list))
 
