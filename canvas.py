@@ -83,6 +83,8 @@ class List(gtk.VBox):
         self.thread = None
         self.words = ''
 
+        self.can_search = True
+
         self.show_all()
 
     def _add_activity(self, widget):
@@ -99,20 +101,18 @@ class List(gtk.VBox):
             child = None
 
     def search(self, entry):
-
-        try:
-            self.thread.cancel()
-        except:
+        #_logger.debug(threading.enumerate())
+        if self.can_search:
+            self.can_search = False
+            self.w = entry.get_text().lower()
+            self._clear()
+            self.thread = threading.Thread(target=self._search)
+            self.thread.start()
+        else:
             pass
 
-        self.words = entry.get_text().lower()
-        self._clear()
-
-        self.thread = threading.Timer(0, self._search)
-        self.thread.start()
-
     def _search(self):
-        w = self.words
+        w = str(self.w)
         _id = -1
         for activity in self._list:
             _id += 1
@@ -121,6 +121,9 @@ class List(gtk.VBox):
             if (w in name) or (w in description):
                 activity_widget = ActivityWidget(_id, self)
                 self._add_activity(activity_widget)
+        self.can_search = True
+        
+
 
 
 class ActivityWidget(gtk.HBox):
