@@ -43,27 +43,32 @@ def get_logger():
 
 def update_list():
     """Download the latest list version"""
-    remote_file = urllib.urlopen(LIST_DOWNLOAD)
-    _file = open(LIST_PATH, 'w')
-    _file.write(remote_file.read())
-    _file.close()
-    remote_file.close()
+    try:
+        remote_file = urllib.urlopen(LIST_DOWNLOAD)
+        _file = open(LIST_PATH, 'w')
+        _file.write(remote_file.read())
+        _file.close()
+        remote_file.close()
+    except:
+        pass
 
 
 def get_store_list():
     """Returns the store list"""
-    f = open(LIST_PATH, 'r')
-
     store_list = []
-    e = True
-    while e:
-        line = f.readline()
-        if not(line):
-            e = False
-        else:
-            line = line.replace('\n', '')
-            l = line.split('|')
-            store_list.append(l)
+    try:
+        f = open(LIST_PATH, 'r')
+        e = True
+        while e:
+            line = f.readline()
+            if not(line):
+                e = False
+            else:
+                line = line.replace('\n', '')
+                l = line.split('|')
+                store_list.append(l)
+    except:
+        pass
 
     return store_list
 
