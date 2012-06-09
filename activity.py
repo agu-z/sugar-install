@@ -100,7 +100,10 @@ class InstallActivity(activity.Activity):
         search_entry.add_clear_button()
         search_item = gtk.ToolItem()
         search_item.add(search_entry)
+        search_item.set_sensitive(False)
         toolbarbox.toolbar.insert(search_item, -1)
+
+        canvas.gtk_list.setup(search_item)
 
         separator = gtk.SeparatorToolItem()
         separator.set_draw(False)
@@ -111,9 +114,7 @@ class InstallActivity(activity.Activity):
         toolbarbox.toolbar.insert(stopbtn, -1)
 
         self.set_toolbar_box(toolbarbox)
-
         self.show_all()
-
         canvas.set_page(0)
 
 

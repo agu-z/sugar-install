@@ -3,6 +3,6 @@ name = Install
 activity_version = 1
 bundle_id = org.sugarlabs.Install
 exec = sugar-activity activity.InstallActivity -s
-icon = notes
+icon = activity-install
 show_launcher = yes
 license = GPLv3+

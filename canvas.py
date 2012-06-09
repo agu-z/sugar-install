@@ -19,6 +19,7 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 import gtk
+import pango
 import threading
 import utils
 
@@ -75,7 +76,6 @@ class List(gtk.VBox):
     def __init__(self, parent):
         gtk.VBox.__init__(self)
 
-        self._list = utils.get_store_list()
         self.download_list = DownloadList()
 
         self._parent = parent
@@ -83,9 +83,25 @@ class List(gtk.VBox):
         self.thread = None
         self.words = ''
 
-        self.can_search = True
+        self.can_search = False
 
         self.show_all()
+
+    def setup(self, search_entry):
+        label = gtk.Label(_("Loading..."))
+        label.modify_font(pango.FontDescription("25"))
+        self.pack_start(label, True, True, 0)
+        threading.Thread(target=utils.update_list).start()
+
+        self._list = utils.get_store_list()
+        if self._list:
+            search_entry.set_sensitive(True)
+            self.can_search = True
+            self.clear()
+        else:
+            label.set_text(_("Failed to download the list"))
+
+        _logger.debug(str(self._list))
 
     def _add_activity(self, widget):
         self.pack_start(widget, False, False, 7)
@@ -95,7 +111,7 @@ class List(gtk.VBox):
         widget.show()
         separator.show()
 
-    def _clear(self):
+    def clear(self):
         for child in self.get_children():
             self.remove(child)
             child = None
@@ -105,7 +121,7 @@ class List(gtk.VBox):
         if self.can_search:
             self.can_search = False
             self.w = entry.get_text().lower()
-            self._clear()
+            self.clear()
             self.thread = threading.Thread(target=self._search)
             self.thread.start()
         else:
@@ -122,8 +138,6 @@ class List(gtk.VBox):
                 activity_widget = ActivityWidget(_id, self)
                 self._add_activity(activity_widget)
         self.can_search = True
-        
-
 
 
 class ActivityWidget(gtk.HBox):

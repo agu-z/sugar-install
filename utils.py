@@ -26,13 +26,15 @@ import logging
 from sugar.activity import activity
 from sugar.bundle.activitybundle import ActivityBundle
 
+from gettext import gettext as _
+
 # Paths
 LIST_DOWNLOAD = "http://www.fing.edu.uy/~aaguiar/files/store.lst"
 LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store.lst')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
 
 # Logging
-_logger = logging.getLogger('activitiesstore-activity')
+_logger = logging.getLogger('install-activity')
 _logger.setLevel(logging.DEBUG)
 logging.basicConfig()
 
