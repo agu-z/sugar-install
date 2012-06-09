@@ -84,18 +84,27 @@ class List(gtk.VBox):
         self.words = ''
 
         self.can_search = False
+        self.can_download_again = True
 
         self.show_all()
 
-    def setup(self, search_entry):
-        label_box = gtk.VBox()
-        label = gtk.Label(_("Loading..."))
-        label.modify_font(pango.FontDescription("25"))
-        label_box.pack_start(label, True, True, 0)
+    def setup(self, search_entry, try_again_btn):
+        try_again_btn.hide()
+        if not self.can_download_again:
+            label_box = gtk.VBox()
+            label = gtk.Label(_("Loading..."))
+            label.modify_font(pango.FontDescription("25"))
+            label_box.pack_start(label, True, True, 0)
 
-        self.pack_start(label_box, True, True, 0)
-        threading.Thread(target=utils.update_list).start()
+            self.pack_start(label_box, True, True, 0)
+            self.can_download_again = False
+            threading.Thread(target=utils.update_list,
+                             args=(self.set_list,
+                                   search_entry,
+                                   label,
+                                   try_again_btn)).start()
 
+    def set_list(self, search_entry, label, try_again_btn):
         self._list = utils.get_store_list()
         if self._list:
             search_entry.set_sensitive(True)
@@ -103,11 +112,7 @@ class List(gtk.VBox):
             self.clear()
         else:
             label.set_text(_("Failed to download the list"))
-            try_again = gtk.Button(_("Try Again"))
-            try_again.connect("clicked", lambda w: self.setup(search_entry))
-            label_box.pack_start(try_again, False, True, 2)
-
-        _logger.debug(str(self._list))
+            try_again_btn.show()
 
     def _add_activity(self, widget):
         self.pack_start(widget, False, False, 7)

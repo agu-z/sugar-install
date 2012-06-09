@@ -30,6 +30,7 @@ from sugar.activity.widgets import ActivityToolbarButton
 from sugar.activity.widgets import StopButton
 from sugar.graphics.toolbarbox import ToolbarBox
 from sugar.graphics.radiotoolbutton import RadioToolButton
+from sugar.graphics.toolbutton import ToolButton
 from sugar.graphics.icon import Icon
 from sugar.graphics import iconentry
 
@@ -103,7 +104,12 @@ class InstallActivity(activity.Activity):
         search_item.set_sensitive(False)
         toolbarbox.toolbar.insert(search_item, -1)
 
-        canvas.gtk_list.setup(search_item)
+        try_again_btn = ToolButton("gtk-refresh")
+        try_again_btn.connect("clicked", lambda w: canvas.gtk_list.setup(
+                                                                search_item,
+                                                                try_again_btn))
+        toolbarbox.toolbar.insert(try_again_btn, -1)
+        canvas.gtk_list.setup(search_item, try_again_btn)
 
         separator = gtk.SeparatorToolItem()
         separator.set_draw(False)
@@ -115,6 +121,7 @@ class InstallActivity(activity.Activity):
 
         self.set_toolbar_box(toolbarbox)
         self.show_all()
+
         canvas.set_page(0)
 
 
