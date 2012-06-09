@@ -41,7 +41,7 @@ from canvas import Canvas
 utils.update_list()
 
 
-class ActivitiesStore(activity.Activity):
+class InstallActivity(activity.Activity):
 
     def __init__(self, handle):
         activity.Activity.__init__(self, handle, True)
