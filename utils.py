@@ -31,6 +31,8 @@ LIST_DOWNLOAD = "http://www.fing.edu.uy/~aaguiar/files/store.lst"
 LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store.lst')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
 
+downloading = False
+
 # Logging
 _logger = logging.getLogger('install-activity')
 _logger.setLevel(logging.DEBUG)
@@ -41,9 +43,11 @@ def get_logger():
     return _logger
 
 
-def update_list(func, search_entry, label, try_again_btn):
+def update_list():
     """Download the latest list version"""
+    global downloading
     try:
+        downloading = True
         remote_file = urllib.urlopen(LIST_DOWNLOAD)
         _file = open(LIST_PATH, 'w')
         _file.write(remote_file.read())
@@ -52,7 +56,7 @@ def update_list(func, search_entry, label, try_again_btn):
     except:
         pass
 
-    func(search_entry, label, try_again_btn)
+    downloading = False
 
 
 def get_store_list():

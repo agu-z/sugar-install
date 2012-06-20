@@ -20,7 +20,6 @@
 
 import gtk
 import gobject
-import utils
 
 gtk.gdk.threads_init()
 
@@ -37,9 +36,6 @@ from sugar.graphics import iconentry
 from gettext import gettext as _
 
 from canvas import Canvas
-
-# Update the list
-utils.update_list()
 
 
 class InstallActivity(activity.Activity):
@@ -121,6 +117,8 @@ class InstallActivity(activity.Activity):
 
         self.set_toolbar_box(toolbarbox)
         self.show_all()
+
+        try_again_btn.hide()
 
         canvas.set_page(0)
 
