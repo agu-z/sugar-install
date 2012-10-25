@@ -84,8 +84,12 @@ class List(gtk.VBox):
         self.words = ''
         self._list = utils.get_store_list()
         self.can_search = True
+        self.stopped = False
 
         self.show_all()
+
+    def stop_search(self, *args):
+        self.stopped = True
 
     def _add_activity(self, widget):
         self.pack_start(widget, False, False, 7)
@@ -109,12 +113,15 @@ class List(gtk.VBox):
             self.thread = threading.Thread(target=self._search)
             self.thread.start()
         else:
-            pass
+            self.stop_search()
+            gobject.idle_add(self.search, entry)
 
     def _search(self):
         w = str(self.w)
         _id = -1
         for activity in self._list:
+            if self.stopped:
+                break
             _id += 1
             name = activity[1].lower()
             description = activity[2].lower()
@@ -256,7 +263,6 @@ class DownloadList(gtk.TreeView):
         if progress >= 150:
             self._model[_id][1] = _("Installing...")
             self._model[_id][2] = 100
-
 
         if progress == 200:
             self._model[_id][1] = _("Installed!")
