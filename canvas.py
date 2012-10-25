@@ -255,6 +255,8 @@ class DownloadList(gtk.TreeView):
 
         if progress >= 150:
             self._model[_id][1] = _("Installing...")
+            self._model[_id][2] = 100
+
 
         if progress == 200:
             self._model[_id][1] = _("Installed!")
