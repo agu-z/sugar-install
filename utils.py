@@ -28,7 +28,7 @@ from sugar.bundle.activitybundle import ActivityBundle
 
 # Paths
 LIST_DOWNLOAD = "http://www.fing.edu.uy/~aaguiar/files/store.lst"
-LIST_PATH = os.path.join(activity.get_activity_root(), 'data', 'store.lst')
+LIST_PATH = os.path.join(activity.get_bundle_path(), 'store.lst')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
 
 downloading = False

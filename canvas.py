@@ -82,41 +82,9 @@ class List(gtk.VBox):
         self._parent = parent
         self.thread = None
         self.words = ''
-        self.can_search = False
+        self.list = utils.get_store_list()
 
         self.show_all()
-
-    def setup(self, search_entry, try_again_btn):
-        try_again_btn.hide()
-
-        self._try_again_btn = try_again_btn
-        self._search_entry = search_entry
-
-        label_box = gtk.VBox()
-        self._label = gtk.Label(_("Loading..."))
-        self._label.modify_font(pango.FontDescription("25"))
-        label_box.pack_start(self._label, True, True, 0)
-
-        self.pack_start(label_box, True, True, 0)
-        thread = threading.Thread(target=utils.update_list)
-        gobject.timeout_add(100, self._is_ready, thread)
-
-        thread.start()
-
-    def _is_ready(self, thread):
-        if utils.downloading:
-            self.set_list()
-
-    def set_list(self):
-        self._list = utils.get_store_list()
-        _logger.info('LISTAAA: %s' % self._list)
-        if self._list:
-            self._search_entry.set_sensitive(True)
-            self.can_search = True
-            self.clear()
-        else:
-            self._label.set_text(_("Failed to download the list"))
-            self._try_again_btn.show()
 
     def _add_activity(self, widget):
         self.pack_start(widget, False, False, 7)

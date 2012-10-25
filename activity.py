@@ -97,15 +97,7 @@ class InstallActivity(activity.Activity):
         search_entry.add_clear_button()
         search_item = gtk.ToolItem()
         search_item.add(search_entry)
-        search_item.set_sensitive(False)
         toolbarbox.toolbar.insert(search_item, -1)
-
-        try_again_btn = ToolButton("gtk-refresh")
-        try_again_btn.connect("clicked", lambda w: canvas.gtk_list.setup(
-                                                                search_item,
-                                                                try_again_btn))
-        toolbarbox.toolbar.insert(try_again_btn, -1)
-        canvas.gtk_list.setup(search_item, try_again_btn)
 
         separator = gtk.SeparatorToolItem()
         separator.set_draw(False)
@@ -117,8 +109,6 @@ class InstallActivity(activity.Activity):
 
         self.set_toolbar_box(toolbarbox)
         self.show_all()
-
-        try_again_btn.hide()
 
         canvas.set_page(0)
 
