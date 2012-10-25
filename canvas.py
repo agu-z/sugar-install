@@ -82,7 +82,8 @@ class List(gtk.VBox):
         self._parent = parent
         self.thread = None
         self.words = ''
-        self.list = utils.get_store_list()
+        self._list = utils.get_store_list()
+        self.can_search = True
 
         self.show_all()
 
