@@ -29,6 +29,7 @@ from sugar.bundle.activitybundle import ActivityBundle
 # Paths
 LIST_DOWNLOAD = "http://www.fing.edu.uy/~aaguiar/files/store.lst"
 LIST_PATH = os.path.join(activity.get_bundle_path(), 'store.lst')
+ICONS_DIR = os.path.join(activity.get_activity_root(), 'data')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
 
 downloading = False
@@ -85,7 +86,7 @@ def get_icon(activity_id):
     activity_obj = store_list[activity_id]
     number = activity_obj[0]
 
-    file_image = os.path.join(TMP_DIR, "icon%s" % number)
+    file_image = os.path.join(ICONS_DIR, "icon%s" % number)
     if not os.path.exists(file_image):
         url =\
       'http://activities.sugarlabs.org/en-US/sugar/images/addon_icon/' + number

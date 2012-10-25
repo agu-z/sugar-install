@@ -183,7 +183,6 @@ class ActivityWidget(gtk.HBox):
         label = gtk.Label()
         label.set_justify(gtk.JUSTIFY_LEFT)
         label.set_line_wrap(True)
-        label.set_use_markup(True)
 
         return label
 
@@ -214,7 +213,7 @@ class ActivityWidget(gtk.HBox):
                                 self._progress_changed)).start()
 
         self._download_id = self._download_list.add_download(
-                                                        self._activity_props[1])
+                                                       self._activity_props[1])
 
     def _progress_changed(self, progress):
         self._download_list.set_download_progress(self._download_id, progress)
