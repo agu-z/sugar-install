@@ -27,9 +27,32 @@ import utils
 from gettext import gettext as _
 
 BTN_COLOR = gtk.gdk.color_parse("blue")
+ITERS = []
 
 # Logging
 _logger = utils.get_logger()
+
+
+def _gen_activity(_id, parent):
+        _id = _id
+        _activity_props = parent._list[_id]
+        text1 = "<b>%s</b>" % _activity_props[1]
+        text2 = "<b>Description: %s</b>" % _activity_props[2]
+        text3 = "<b>Version: %s</b>" % _activity_props[3]
+        text4 = "<b>Works with: %s</b>" % (_activity_props[4] + ' - ' + _activity_props[5])
+        text5 = "<b>Updated: %s</b>" % _activity_props[6]
+        text6 = "<b>Downloads: %s</b>" % _activity_props[7]
+        text7 = "<b>Homepage: %s</b>" % _activity_props[8]
+        text =  text1 + "\n" + text2 + "\n" + text3 + "\n" + text4 + "\n" + text5 + "\n" + text6 + "\n" + text7 
+        """
+        try:
+            pixbuf_icon = utils.get_icon(self._id)
+            self.icon.set_from_pixbuf(pixbuf_icon)
+        except:
+            pass
+        """
+        texto = [text1, text1, text]
+        return texto
 
 
 class Canvas(gtk.Notebook):
@@ -72,11 +95,38 @@ class Canvas(gtk.Notebook):
         self.set_page(1)
 
 
-class List(gtk.VBox):
+class List(gtk.TreeView):
 
     def __init__(self, parent):
-        gtk.VBox.__init__(self)
+        gtk.TreeView.__init__(self)
 
+        self._model = gtk.ListStore(str, str, str)
+        self.set_model(self._model)
+
+        self.icon = gtk.CellRendererPixbuf()
+        self._name = gtk.CellRendererText()
+        self.description = gtk.CellRendererText()
+        self.description.props.wrap_mode = True
+        
+        self.icon_column = gtk.TreeViewColumn(_("Icon"))
+        self._name_column = gtk.TreeViewColumn(_("Activity"))
+        self.description_column = gtk.TreeViewColumn(_("Description"))
+
+
+        self.icon_column.pack_start(self.icon, False)
+        self._name_column.pack_start(self._name, True)
+        self.description_column.pack_start(self.description, True)
+
+        self._name_column.add_attribute(self._name, "markup", 1)
+        self.description_column.add_attribute(self.description, "markup", 2)
+        self.icon_column.add_attribute(self.icon, "icon_name", 0)
+
+        self.current = 0
+
+        self.append_column(self.icon_column)
+        self.append_column(self._name_column)
+        self.append_column(self.description_column)
+        
         self.download_list = DownloadList()
 
         self._parent = parent
@@ -88,16 +138,19 @@ class List(gtk.VBox):
 
         self.show_all()
 
+    def up(self):
+        self.current += 1
+
+    def down(self):
+        self.current -= 1
+
     def stop_search(self, *args):
         self.stopped = True
 
-    def _add_activity(self, widget):
-        self.pack_start(widget, False, False, 7)
-        separator = gtk.HSeparator()
-        self.pack_start(separator, False, False, 2)
-
-        widget.show()
-        separator.show()
+    def _add_activity(self, info):
+        iter = self._model.insert(self.current, info)
+        ITERS.append(iter)
+        self.up()
 
     def clear(self):
         for child in self.get_children():
@@ -119,6 +172,8 @@ class List(gtk.VBox):
     def _search(self):
         w = str(self.w)
         _id = -1
+        for x in ITERS:
+            self._model.remove(x)
         for activity in self._list:
             if self.stopped:
                 break
@@ -126,104 +181,9 @@ class List(gtk.VBox):
             name = activity[1].lower()
             description = activity[2].lower()
             if (w in name) or (w in description):
-                activity_widget = ActivityWidget(_id, self)
+                activity_widget = _gen_activity(_id, self)
                 self._add_activity(activity_widget)
         self.can_search = True
-
-
-class ActivityWidget(gtk.HBox):
-
-    def __init__(self, _id, parent):
-        gtk.HBox.__init__(self, False, 0)
-
-        self._id = _id
-        self._download_list = parent.download_list
-        self._downloads_icon = parent._parent.downloads_icon
-
-        self.name_label = self._label()
-        self.icon = gtk.Image()
-        self.install_button = gtk.Button(_("INSTALL"))
-        self.install_button.connect("clicked", self._btn_clicked)
-        self.install_button.modify_bg(gtk.STATE_NORMAL, BTN_COLOR)
-        self.install_button.modify_bg(gtk.STATE_PRELIGHT, BTN_COLOR)
-        self.install_button.modify_bg(gtk.STATE_ACTIVE, BTN_COLOR)
-        self.install_button.set_size_request(gtk.gdk.screen_width() / 10, -1)
-
-        self._activity_props = parent._list[_id]
-
-        self._left_box = gtk.VBox()
-        self._right_box = gtk.VBox()
-        self._icon_and_label = gtk.HBox()
-
-        self._icon_and_label.pack_start(self.icon, False, True, 0)
-        self._icon_and_label.pack_end(self.name_label, True, True, 6)
-        self._left_box.pack_start(self._icon_and_label, False, True, 0)
-        self._left_box.pack_end(self.install_button, False, True, 0)
-
-        self.desc_label = self._label()
-        self.vers_label = self._label()
-        self.suga_label = self._label()
-        self.upda_label = self._label()
-        self.down_label = self._label()
-        self.home_label = self._label()
-
-        self._right_box.pack_start(self.desc_label, False, True, 0)
-        self._right_box.pack_start(self.vers_label, False, True, 0)
-        self._right_box.pack_start(self.suga_label, False, True, 0)
-        self._right_box.pack_start(self.upda_label, False, True, 0)
-        self._right_box.pack_start(self.down_label, False, True, 0)
-        self._right_box.pack_start(self.home_label, False, True, 0)
-
-        self.pack_start(self._left_box, False, True, 10)
-        self.pack_end(self._right_box, False, True, 50)
-
-        self.connect("expose-event", self._expose_event_cb)
-
-        self._setup()
-
-        self.show_all()
-
-    def _expose_event_cb(self, widget, event):
-        self.install_button.set_size_request(gtk.gdk.screen_width() / 10, -1)
-
-    def _label(self):
-        label = gtk.Label()
-        label.set_justify(gtk.JUSTIFY_LEFT)
-        label.set_line_wrap(True)
-
-        return label
-
-    def _setup(self):
-        self.name_label.set_markup("<b>%s</b>" % self._activity_props[1])
-
-        self.desc_label.set_markup(self._activity_props[2])
-        self.vers_label.set_markup('<b>Version:</b> ' + self._activity_props[3])
-        self.suga_label.set_markup('<b>Works with:</b> ' +\
-                     self._activity_props[4] + ' - ' + self._activity_props[5])
-        self.upda_label.set_markup('<b>Updated:</b> ' + self._activity_props[6])
-        self.down_label.set_markup('<b>Downloads:</b> ' +\
-                                                        self._activity_props[7])
-        self.home_label.set_markup('<b>Homepage:</b> ' +\
-                                                        self._activity_props[8])
-
-        try:
-            pixbuf_icon = utils.get_icon(self._id)
-            self.icon.set_from_pixbuf(pixbuf_icon)
-        except:
-            pass
-
-    def _btn_clicked(self, widget):
-        _logger.info("Install button clicked (%s)")
-        self._downloads_icon.animate()
-
-        threading.Thread(target=utils.download_activity, args=(self._id,
-                                self._progress_changed)).start()
-
-        self._download_id = self._download_list.add_download(
-                                                       self._activity_props[1])
-
-    def _progress_changed(self, progress):
-        self._download_list.set_download_progress(self._download_id, progress)
 
 
 class DownloadList(gtk.TreeView):
