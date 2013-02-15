@@ -29,6 +29,7 @@ from gettext import gettext as _
 from sugar.graphics.icon import CellRendererIcon
 from sugar.graphics.xocolor import XoColor
 from sugar.graphics import style
+from sugar.graphics.alert import NotifyAlert
 
 BTN_COLOR = gtk.gdk.color_parse("blue")
 ITERS = []
@@ -163,6 +164,9 @@ class List(gtk.TreeView):
 
     def down(self):
         self.current -= 1
+
+    def _download(self):
+        pass
 
     def stop_search(self, *args):
         self.stopped = True
