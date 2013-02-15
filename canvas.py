@@ -46,23 +46,25 @@ def _gen_activity(_id, parent):
         _activity_props = parent._list[_id]
         text1 = "<b>Description: </b>%s" % _activity_props[3]
         text2 = "<b>Version: </b>%s" % _activity_props[4]
-        text3 = "<b>Works with: </b>%s" % (_activity_props[5] + ' - ' + _activity_props[6])
+        text3 = "<b>Works with: </b>%s" % (_activity_props[5] + ' - ' +\
+                                           _activity_props[6])
         text4 = "<b>Updated: </b>%s" % _activity_props[7]
         text5 = "<b>Downloads: </b>%s" % _activity_props[8]
         text6 = "<b>Homepage: </b>%s" % _activity_props[9]
-        text =  text1 + "\n" + text2 + "\n" + text3 + "\n" + text4 + "\n" + text5 + "\n" + text6 
+        text = text1 + "\n" + text2 + "\n" + text3 + "\n" + text4 + "\n" +\
+         text5 + "\n" + text6
 
         pixbuf_icon = _activity_props[0]
-	name = "<b>%s</b>" % _activity_props[2]	
+        name = "<b>%s</b>" % _activity_props[2]
 
-        status = _activity_props[1]              
+        status = _activity_props[1]
         if status == "E":
-		status = _("Experimental")
-	else:
-		status = _("Public")
-	info = [pixbuf_icon, name, text, status]
-        return info
+            status = _("Experimental")
+        else:
+            status = _("Public")
 
+        info = [pixbuf_icon, name, text, status]
+        return info
 
 
 class Canvas(gtk.Notebook):
@@ -112,21 +114,21 @@ class List(gtk.TreeView):
 
         self._model = gtk.ListStore(str, str, str, str)
         self.set_model(self._model)
+        self.set_rules_hint(True)
 
         self.icon = CellRendererIcon(self)
-	self.icon._buffer.width = style.zoom(100)
-	self.icon._buffer.height = style.zoom(100)
-	self.icon._xo_color = color
+        self.icon._buffer.width = style.zoom(100)
+        self.icon._buffer.height = style.zoom(100)
+        self.icon._xo_color = color
         self._name = gtk.CellRendererText()
         self.description = gtk.CellRendererText()
         self.status = gtk.CellRendererText()
         self.description.props.wrap_mode = True
-        
+
         self.icon_column = gtk.TreeViewColumn(_("Icon"))
         self._name_column = gtk.TreeViewColumn(_("Activity"))
         self.description_column = gtk.TreeViewColumn(_("Description"))
         self.status_column = gtk.TreeViewColumn(_("Status"))
-
 
         self.icon_column.pack_start(self.icon, False)
         self._name_column.pack_start(self._name, True)
@@ -144,7 +146,7 @@ class List(gtk.TreeView):
         self.append_column(self._name_column)
         self.append_column(self.description_column)
         self.append_column(self.status_column)
-        
+
         self.download_list = DownloadList()
 
         self._parent = parent
