@@ -28,6 +28,8 @@ from sugar.bundle.activitybundle import ActivityBundle
 
 # Paths
 LIST_DOWNLOAD = "http://www.fing.edu.uy/~aaguiar/files/store.lst"
+LIST_DOWNLOAD_MIRROR1 = "http://people.sugarlabs.org/ignacio/store.lst"
+LIST_DOWNLOAD_MIRROR2 = "http://people.sugarlabs.org/aguz/store.lst"
 LIST_PATH = os.path.join(activity.get_bundle_path(), 'store.lst')
 ICONS_DIR = os.path.join(activity.get_activity_root(), 'data')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
@@ -55,7 +57,23 @@ def update_list():
         _file.close()
         remote_file.close()
     except:
-        pass
+        try:
+            downloading = True
+            remote_file = urllib.urlopen(LIST_DOWNLOAD_MIRROR1)
+            _file = open(LIST_PATH, 'w')
+            _file.write(remote_file.read())
+            _file.close()
+            remote_file.close()
+        except:
+            try:
+                downloading = True
+                remote_file = urllib.urlopen(LIST_DOWNLOAD_MIRROR2)
+                _file = open(LIST_PATH, 'w')
+                _file.write(remote_file.read())
+                _file.close()
+                remote_file.close()
+            except:
+                pass
 
     downloading = False
 
