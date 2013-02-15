@@ -20,11 +20,15 @@
 
 import gtk
 import gobject
+import gconf
 import pango
 import threading
 import utils
 
 from gettext import gettext as _
+from sugar.graphics.icon import CellRendererIcon
+from sugar.graphics.xocolor import XoColor
+from sugar.graphics import style
 
 BTN_COLOR = gtk.gdk.color_parse("blue")
 ITERS = []
@@ -32,25 +36,31 @@ ITERS = []
 # Logging
 _logger = utils.get_logger()
 
+# Xo Color #
+client = gconf.client_get_default()
+color = XoColor(client.get_string('/desktop/sugar/user/color'))
+
 
 def _gen_activity(_id, parent):
         _id = _id
         _activity_props = parent._list[_id]
-        text1 = "<b>%s</b>" % _activity_props[1]
-        text2 = "<b>Description: %s</b>" % _activity_props[2]
-        text3 = "<b>Version: %s</b>" % _activity_props[3]
-        text4 = "<b>Works with: %s</b>" % (_activity_props[4] + ' - ' + _activity_props[5])
-        text5 = "<b>Updated: %s</b>" % _activity_props[6]
-        text6 = "<b>Downloads: %s</b>" % _activity_props[7]
-        text7 = "<b>Homepage: %s</b>" % _activity_props[8]
-        text =  text1 + "\n" + text2 + "\n" + text3 + "\n" + text4 + "\n" + text5 + "\n" + text6 + "\n" + text7 
-        pixbuf_icon = None
-        try:
-            pixbuf_icon = utils.get_icon(_id)
-        except:
-            pass
+        text1 = "<b>Description: </b>%s" % _activity_props[3]
+        text2 = "<b>Version: </b>%s" % _activity_props[4]
+        text3 = "<b>Works with: </b>%s" % (_activity_props[5] + ' - ' + _activity_props[6])
+        text4 = "<b>Updated: </b>%s" % _activity_props[7]
+        text5 = "<b>Downloads: </b>%s" % _activity_props[8]
+        text6 = "<b>Homepage: </b>%s" % _activity_props[9]
+        text =  text1 + "\n" + text2 + "\n" + text3 + "\n" + text4 + "\n" + text5 + "\n" + text6 
 
-        info = [pixbuf_icon, text1, text]
+        pixbuf_icon = _activity_props[0]
+	name = "<b>%s</b>" % _activity_props[2]	
+
+        status = _activity_props[1]              
+        if status == "E":
+		status = _("Experimental")
+	else:
+		status = _("Public")
+	info = [pixbuf_icon, name, text, status]
         return info
 
 
@@ -100,33 +110,40 @@ class List(gtk.TreeView):
     def __init__(self, parent):
         gtk.TreeView.__init__(self)
 
-        self._model = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
+        self._model = gtk.ListStore(str, str, str, str)
         self.set_model(self._model)
 
-        self.icon = gtk.CellRendererPixbuf()
+        self.icon = CellRendererIcon(self)
+	self.icon._buffer.width = style.zoom(100)
+	self.icon._buffer.height = style.zoom(100)
+	self.icon._xo_color = color
         self._name = gtk.CellRendererText()
         self.description = gtk.CellRendererText()
+        self.status = gtk.CellRendererText()
         self.description.props.wrap_mode = True
         
         self.icon_column = gtk.TreeViewColumn(_("Icon"))
         self._name_column = gtk.TreeViewColumn(_("Activity"))
         self.description_column = gtk.TreeViewColumn(_("Description"))
+        self.status_column = gtk.TreeViewColumn(_("Status"))
 
 
         self.icon_column.pack_start(self.icon, False)
-        self.icon_column.add_attribute(self.icon, 'pixbuf', 0)
         self._name_column.pack_start(self._name, True)
         self.description_column.pack_start(self.description, True)
+        self.status_column.pack_start(self.status, False)
 
+        self.icon_column.add_attribute(self.icon, 'icon_name', 0)
         self._name_column.add_attribute(self._name, "markup", 1)
         self.description_column.add_attribute(self.description, "markup", 2)
-        self.icon_column.add_attribute(self.icon, "icon_name", 0)
+        self.status_column.add_attribute(self.status, "text", 3)
 
         self.current = 0
 
         self.append_column(self.icon_column)
         self.append_column(self._name_column)
         self.append_column(self.description_column)
+        self.append_column(self.status_column)
         
         self.download_list = DownloadList()
 
