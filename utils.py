@@ -47,19 +47,18 @@ def get_logger():
 
 
 def _know():
+    _file = None
     try:
-        remote_file = urllib.urlopen(LIST_DOWNLOAD)
-        return LIST_DOWNLOAD
+        _file = urllib.urlopen(LIST_DOWNLOAD)
     except:
         try:
-            remote_file = urllib.urlopen(LIST_DOWNLOAD_MIRROR1)
-            return LIST_DOWNLOAD_MIRROR1
+            _file = urllib.urlopen(LIST_DOWNLOAD_MIRROR1)
         except:
             try:
-                remote_file = urllib.urlopen(LIST_DOWNLOAD_MIRROR2)
-                return LIST_DOWNLOAD_MIRROR2
+                _file = urllib.urlopen(LIST_DOWNLOAD_MIRROR2)
             except:
-                return "file://" + LIST_PATH
+                pass
+    return _file
 
 
 def update_list():
@@ -67,11 +66,12 @@ def update_list():
     global downloading
     try:
         downloading = True
-        remote_file = urllib.urlopen(_know())
-        _file = open(LIST_PATH, 'w')
-        _file.write(remote_file.read())
-        _file.close()
-        remote_file.close()
+        remote_file = _know()
+        if remote_file is not None:
+            _file = open(LIST_PATH, 'w')
+            _file.write(remote_file.read())
+            _file.close()
+            remote_file.close()
     except:
         pass
 
