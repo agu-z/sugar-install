@@ -44,15 +44,15 @@ def _gen_activity(_id, parent):
         text6 = "<b>Downloads: %s</b>" % _activity_props[7]
         text7 = "<b>Homepage: %s</b>" % _activity_props[8]
         text =  text1 + "\n" + text2 + "\n" + text3 + "\n" + text4 + "\n" + text5 + "\n" + text6 + "\n" + text7 
-        """
+        pixbuf_icon = None
         try:
-            pixbuf_icon = utils.get_icon(self._id)
-            self.icon.set_from_pixbuf(pixbuf_icon)
+            pixbuf_icon = utils.get_icon(_id)
         except:
             pass
-        """
-        texto = [text1, text1, text]
-        return texto
+
+        info = [pixbuf_icon, text1, text]
+        return info
+
 
 
 class Canvas(gtk.Notebook):
@@ -100,7 +100,7 @@ class List(gtk.TreeView):
     def __init__(self, parent):
         gtk.TreeView.__init__(self)
 
-        self._model = gtk.ListStore(str, str, str)
+        self._model = gtk.ListStore(gtk.gdk.Pixbuf, str, str)
         self.set_model(self._model)
 
         self.icon = gtk.CellRendererPixbuf()
@@ -114,6 +114,7 @@ class List(gtk.TreeView):
 
 
         self.icon_column.pack_start(self.icon, False)
+        self.icon_column.add_attribute(self.icon, 'pixbuf', 0)
         self._name_column.pack_start(self._name, True)
         self.description_column.pack_start(self.description, True)
 
