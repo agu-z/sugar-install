@@ -27,9 +27,9 @@ from sugar.activity import activity
 from sugar.bundle.activitybundle import ActivityBundle
 
 # Paths
-LIST_DOWNLOAD = "http://www.fing.edu.uy/~aaguiar/files/store.lst"
-LIST_DOWNLOAD_MIRROR1 = "http://people.sugarlabs.org/ignacio/store.lst"
-LIST_DOWNLOAD_MIRROR2 = "http://people.sugarlabs.org/aguz/store.lst"
+LIST_DOWNLOAD = "http://people.sugarlabs.org/ignacio/store.lst"
+LIST_DOWNLOAD_MIRROR1 = "http://people.sugarlabs.org/aguz/store.lst"
+LIST_DOWNLOAD_MIRROR2 = "http://www.fing.edu.uy/~aaguiar/files/store.lst"
 LIST_PATH = os.path.join(activity.get_bundle_path(), 'store.lst')
 ICONS_DIR = os.path.join(activity.get_activity_root(), 'data')
 TMP_DIR = os.path.join(activity.get_activity_root(), "tmp")
