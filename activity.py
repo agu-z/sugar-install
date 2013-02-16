@@ -3,6 +3,7 @@
 
 # activity.py by:
 #    Agustin Zubiaga <aguz@sugarlabs.org>
+#    Ignacio Rodríguez <ignacio@sugarlabs.org>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -72,6 +73,7 @@ class InstallActivity(activity.Activity):
         downloads_list.connect("clicked", canvas.switch_to_downloads_list)
         downloads_list.set_tooltip(_("Show the downloads list"))
         downloads_list.props.group = store_list
+
 
         self.downloads_icon = DownloadsIcon()
         downloads_list.set_icon_widget(self.downloads_icon)

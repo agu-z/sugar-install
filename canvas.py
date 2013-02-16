@@ -117,6 +117,7 @@ class List(gtk.TreeView):
 
         self._model = gtk.ListStore(str, str, str, str)
         self.set_model(self._model)
+        self._activity = parent
         self.set_rules_hint(True)
 
         self.icon = CellRendererIcon(self)
@@ -151,6 +152,7 @@ class List(gtk.TreeView):
         self.append_column(self.status_column)
 
         self.download_list = DownloadList()
+        self.connect("row-activated", self._download)
 
         self._parent = parent
         self.thread = None
@@ -167,8 +169,19 @@ class List(gtk.TreeView):
     def down(self):
         self.current -= 1
 
-    def _download(self):
-        pass
+    def _download(self, widget, row, col):
+        # FIXME: Traduction to english please.
+        model = widget.get_model()
+        name = str(model[row][1]).replace("<b>", "").replace("</b>", "")
+        _logger.debug("Started download of activity:" + name)
+        self._alert = NotifyAlert()
+        self._alert.props.msg = _("La actividad %s comenzo a descargarse") %\
+                        name
+        self._alert.props.title = _("Descarga comenzada")
+        self._activity.add_alert(self._alert)
+        self._alert.connect('response', lambda x,
+                            i: self._activity.remove_alert(x))
+        return True
 
     def stop_search(self, *args):
         self.stopped = True
