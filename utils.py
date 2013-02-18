@@ -3,6 +3,8 @@
 
 # utils.py by:
 #    Agustin Zubiaga <aguz@sugarlabs.org>
+#    Ignacio Rodríguez <ignacio@sugarlabs.org>
+#    Alan Aguiar <alanjas@gmail.com>
 
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

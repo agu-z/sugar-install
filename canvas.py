@@ -211,8 +211,8 @@ class List(gtk.TreeView):
     def _search(self):
         w = str(self.w)
         _id = -1
-        for x in ITERS:
-            self._model.remove(x)
+        for iter in ITERS:
+            self._model.remove(iter)
         for activity in self._list:
             if self.stopped:
                 break
