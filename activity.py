@@ -42,7 +42,9 @@ from canvas import Canvas
 class InstallActivity(activity.Activity):
 
     def __init__(self, handle):
-        activity.Activity.__init__(self, handle, True)
+        activity.Activity.__init__(self, handle)
+
+        self.max_participants = 1
 
         # Canvas
         canvas = Canvas(self)
