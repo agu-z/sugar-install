@@ -23,7 +23,6 @@
 import gtk
 import gobject
 import gconf
-import pango
 import threading
 import utils
 

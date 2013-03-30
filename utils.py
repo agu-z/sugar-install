@@ -43,6 +43,8 @@ _logger = logging.getLogger('install-activity')
 _logger.setLevel(logging.DEBUG)
 logging.basicConfig()
 
+from gettext import gettext as _
+
 
 def get_logger():
     return _logger
