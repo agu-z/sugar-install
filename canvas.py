@@ -47,13 +47,14 @@ color = XoColor(client.get_string('/desktop/sugar/user/color'))
 def _gen_activity(_id, parent):
         _id = _id
         _activity_props = parent._list[_id]
-        text1 = "<b>Description: </b>%s" % _activity_props[3]
-        text2 = "<b>Version: </b>%s" % _activity_props[4]
-        text3 = "<b>Works with: </b>%s" % (_activity_props[5] + ' - ' +\
+        bold = '<b>%s </b>'
+        text1 = bold % _("Description:") + _activity_props[3]
+        text2 = bold % _("Version:") + _activity_props[4]
+        text3 = bold % _("Works with:") + (_activity_props[5] + ' - ' +\
                                            _activity_props[6])
-        text4 = "<b>Updated: </b>%s" % _activity_props[7]
-        text5 = "<b>Downloads: </b>%s" % _activity_props[8]
-        text6 = "<b>Homepage: </b>%s" % _activity_props[9]
+        text4 = bold % _("Updated:") + _activity_props[7]
+        text5 = bold % _("Downloads:") + _activity_props[8]
+        text6 = bold % _("Homepage:") + _activity_props[9]
         text = text1 + "\n" + text2 + "\n" + text3 + "\n" + text4 + "\n" +\
          text5 + "\n" + text6
 
@@ -87,13 +88,11 @@ class Canvas(gtk.Notebook):
         scroll = gtk.ScrolledWindow()
         scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         scroll.add_with_viewport(eventbox)
-
         self.append_page(scroll)
 
         # Download List
         scroll = gtk.ScrolledWindow()
         scroll.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-
         scroll.add_with_viewport(self.gtk_list.download_list)
         self.append_page(scroll)
 
@@ -170,17 +169,17 @@ class List(gtk.TreeView):
         self.current -= 1
 
     def _download(self, widget, row, col):
-        # FIXME: Traduction to english please.
         model = widget.get_model()
         name = str(model[row][1]).replace("<b>", "").replace("</b>", "")
-        _logger.debug("Started download of activity:" + name)
+        _logger.debug(_("Started download of activity: %s") % name)
         self._alert = NotifyAlert()
-        self._alert.props.msg = _("La actividad %s comenzo a descargarse") %\
-                        name
-        self._alert.props.title = _("Descarga comenzada")
+        self._alert.props.msg = _("The activity %s begins to download") % name
+        self._alert.props.title = _("Download begins")
         self._activity.add_alert(self._alert)
         self._alert.connect('response', lambda x,
                             i: self._activity.remove_alert(x))
+        # add to download
+        self.download_list.add_download(name)
         return True
 
     def stop_search(self, *args):
@@ -265,3 +264,4 @@ class DownloadList(gtk.TreeView):
 
         if progress == 200:
             self._model[_id][1] = _("Installed!")
+

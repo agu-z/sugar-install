@@ -139,12 +139,12 @@ def download_activity(_id, progress_function):
     xo = name + '-' + version + '.xo'
     file_path = os.path.join(activity.get_activity_root(), "data", xo)
 
-    _logger.info("Downloading activity (%s)")
+    _logger.info(_("Downloading activity (%s)") % name)
     urllib.urlretrieve(web,
                        file_path,
                        reporthook=progress_changed)
 
-    _logger.info("Installing activity (%s)")
+    _logger.info(_("Installing activity (%s)") % name)
     install_activity(file_path, progress_function)
 
 
@@ -163,4 +163,5 @@ def install_activity(xofile, progress_function):
     # Show "Installed..." message
     progress_function(200)
 
-    _logger.info("Activity installed! (%s)")
+    _logger.info(_("Activity installed!"))
+
