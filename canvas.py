@@ -119,7 +119,6 @@ class List(gtk.TreeView):
 
     def __init__(self, parent):
         gtk.TreeView.__init__(self)
-
         self._model = gtk.ListStore(str, str, str, str)
         self.set_model(self._model)
         self._activity = parent
@@ -194,9 +193,11 @@ class List(gtk.TreeView):
                 activity_id = n
                 break
         row = self.download_list.pos
-        #print 'el ide es', activity_id, 'down row: ', row
-        if not(activity_id) == -1:
+        def launch():
             utils.download_activity(int(activity_id), row, self.download_list.set_download_progress)
+        if not(activity_id) == -1:
+            t = threading.Timer(0, launch)
+            t.start()
         self.download_list.pos = self.download_list.pos + 1
         return True
 
@@ -214,7 +215,6 @@ class List(gtk.TreeView):
             child = None
 
     def search(self, entry):
-        #_logger.debug(threading.enumerate())
         if self.can_search:
             self.can_search = False
             self.w = entry.get_text().lower()
@@ -269,14 +269,11 @@ class DownloadList(gtk.TreeView):
 
         self.show_all()
 
-
-
     def add_download(self, name):
         _iter = self._model.append([name, _("Starting download..."), 0])
         return _iter
 
     def set_download_progress(self, _id, progress):
-        #print 'llega id:', _id
         i = _id
         if progress <= 100:
             self._model[i][2] = int(progress)
