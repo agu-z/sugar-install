@@ -229,6 +229,7 @@ class List(gtk.TreeView):
         global match_dict
         match_dict = {}
         w = str(self.w)
+        w = w.strip()
         _id = -1
         for iter in ITERS:
             self._model.remove(iter)
