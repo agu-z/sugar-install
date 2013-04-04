@@ -42,12 +42,17 @@ _logger = utils.get_logger()
 client = gconf.client_get_default()
 color = XoColor(client.get_string('/desktop/sugar/user/color'))
 
+match_dict = {}
+
 
 def _gen_activity(_id, parent):
+        global match_dict
         _id = _id
         _activity_props = parent._list[_id]
+        #print 'prop', _activity_props
         bold = '<b>%s </b>'
         text1 = bold % _("Description:") + _activity_props[3]
+        text7 = bold % _("ID:") + _activity_props[0]
         text2 = bold % _("Version:") + _activity_props[4]
         text3 = bold % _("Works with:") + (_activity_props[5] + ' - ' +\
                                            _activity_props[6])
@@ -55,7 +60,7 @@ def _gen_activity(_id, parent):
         text5 = bold % _("Downloads:") + _activity_props[8]
         text6 = bold % _("Homepage:") + _activity_props[9]
         text = text1 + "\n" + text2 + "\n" + text3 + "\n" + text4 + "\n" +\
-         text5 + "\n" + text6
+         text5 + "\n" + text7 + "\n" + text6
 
         pixbuf_icon = _activity_props[0]
         name = "<b>%s</b>" % _activity_props[2]
@@ -65,6 +70,8 @@ def _gen_activity(_id, parent):
             status = _("Experimental")
         else:
             status = _("Public")
+
+        match_dict[_id] = _activity_props[2]
 
         info = [pixbuf_icon, name, text, status]
         return info
@@ -168,6 +175,7 @@ class List(gtk.TreeView):
         self.current -= 1
 
     def _download(self, widget, row, col):
+        global match_dict
         model = widget.get_model()
         name = str(model[row][1]).replace("<b>", "").replace("</b>", "")
         _logger.debug(_("Started download of activity: %s") % name)
@@ -179,6 +187,17 @@ class List(gtk.TreeView):
                             i: self._activity.remove_alert(x))
         # add to download
         self.download_list.add_download(name)
+        self.download_list.di[self.download_list.pos] = name
+        activity_id = -1
+        for n in match_dict:
+            if match_dict[n] == name:
+                activity_id = n
+                break
+        row = self.download_list.pos
+        #print 'el ide es', activity_id, 'down row: ', row
+        if not(activity_id) == -1:
+            utils.download_activity(int(activity_id), row, self.download_list.set_download_progress)
+        self.download_list.pos = self.download_list.pos + 1
         return True
 
     def stop_search(self, *args):
@@ -207,6 +226,8 @@ class List(gtk.TreeView):
             gobject.idle_add(self.search, entry)
 
     def _search(self):
+        global match_dict
+        match_dict = {}
         w = str(self.w)
         _id = -1
         for iter in ITERS:
@@ -222,11 +243,13 @@ class List(gtk.TreeView):
                 self._add_activity(activity_widget)
         self.can_search = True
 
-
 class DownloadList(gtk.TreeView):
 
     def __init__(self):
         gtk.TreeView.__init__(self)
+
+        self.di = {}
+        self.pos = 0
 
         self._model = gtk.ListStore(str, str, int)
         self.set_model(self._model)
@@ -246,21 +269,25 @@ class DownloadList(gtk.TreeView):
 
         self.show_all()
 
+
+
     def add_download(self, name):
         _iter = self._model.append([name, _("Starting download..."), 0])
         return _iter
 
     def set_download_progress(self, _id, progress):
+        #print 'llega id:', _id
+        i = _id
         if progress <= 100:
-            self._model[_id][2] = int(progress)
+            self._model[i][2] = int(progress)
 
         if progress > 0:
-            self._model[_id][1] = _("Downloading...")
+            self._model[i][1] = _("Downloading...")
 
         if progress >= 150:
-            self._model[_id][1] = _("Installing...")
-            self._model[_id][2] = 100
+            self._model[i][1] = _("Installing...")
+            self._model[i][2] = 100
 
         if progress == 200:
-            self._model[_id][1] = _("Installed!")
+            self._model[i][1] = _("Installed!")
 

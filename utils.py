@@ -119,26 +119,28 @@ def get_icon(activity_id):
     return pixbuf
 
 
-def download_activity(_id, progress_function):
+def download_activity(_id, row, progress_function):
     """Download (and install) an activity"""
     store_list = get_store_list()
+    #print 'store', store_list
     activity_obj = store_list[_id]
 
-    name = activity_obj[1]
+    name = activity_obj[2]
     name = name.lower()
     name = name.replace(' ', '_')
     n = activity_obj[0]
     web = 'http://activities.sugarlabs.org/es-ES/sugar/downloads/latest/'
     web = web + n + '/addon-' + n + '-latest.xo'
-    version = activity_obj[3]
+    version = activity_obj[4]
 
     def progress_changed(block, block_size, total_size):
         downloaded = block * block_size
         progress = downloaded * 100 / total_size
-
-        progress_function(progress)
+        #print 'la ro', row
+        progress_function(row, progress)
 
     xo = name + '-' + version + '.xo'
+    #print 'alan', web, xo
     file_path = os.path.join(activity.get_activity_root(), "data", xo)
 
     _logger.info(_("Downloading activity (%s)") % name)
@@ -147,23 +149,29 @@ def download_activity(_id, progress_function):
                        reporthook=progress_changed)
 
     _logger.info(_("Installing activity (%s)") % name)
-    install_activity(file_path, progress_function)
+    install_activity(file_path, row, progress_function)
 
 
-def install_activity(xofile, progress_function):
+
+
+
+def install_activity(xofile, row, progress_function):
     """Install an downloaded activity"""
     # Show "Installing..." message
-    progress_function(150)
+    progress_function(row, 150)
 
     # Install the .xo
-    bundle = ActivityBundle(xofile)
-    bundle.install()
+    try:
+        bundle = ActivityBundle(xofile)
+        bundle.install()
+    except:
+        print 'fallo install'
 
     # Remove the .xo
     os.remove(xofile)
 
     # Show "Installed..." message
-    progress_function(200)
+    progress_function(row, 200)
 
     _logger.info(_("Activity installed!"))
 
