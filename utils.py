@@ -27,6 +27,7 @@ import logging
 
 from sugar.activity import activity
 from sugar.bundle.activitybundle import ActivityBundle
+from gettext import gettext as _
 
 # Paths
 LIST_DOWNLOAD = _("http://people.sugarlabs.org/ignacio/store.lst")
